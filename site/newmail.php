@@ -123,9 +123,9 @@ if(isSet($_POST['send'])){
 
 </fieldset>
 </form>
-<footer>
-        <p>&copy; Laurent Girod & Romain Maillard - 2015</p>
-      </footer>
+<?php
+	include 'footer.php';
+?> 
 </body>
 </div>
 	

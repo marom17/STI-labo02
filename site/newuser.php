@@ -125,10 +125,8 @@ if(isset($_POST['ok'])){
 </fieldset>
 </form>	
 </div>
-	        <div class="container"> 
-            <footer> 
-                <p>&copy; Laurent Girod & Romain Maillard - 2015</p> 
-            </footer>             
-        </div>         
+<?php
+	include 'footer.php';
+?>       
     </body>     
 </html>

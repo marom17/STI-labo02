@@ -168,10 +168,8 @@ if(isset($_POST['ok'])){
 	
 	
 	
-	        <div class="container"> 
-            <footer> 
-                <p>&copy; Laurent Girod & Romain Maillard - 2015</p> 
-            </footer>             
-        </div>         
+<?php
+	include 'footer.php';
+?>          
     </body>     
 </html>

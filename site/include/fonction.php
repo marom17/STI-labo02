@@ -90,9 +90,9 @@ function readMail($idMessage,$expeditor){
 	$result= $file_db->prepare("SELECT * FROM messages WHERE id=:idMessage");
 	$result->execute(array('idMessage' => $idMessage));
 	foreach($result as $row){
-		echo '<p class="text-left"><h3>FROM: '.$row['expeditor'].'</h3></p>';
-		echo '<p class="text-left"> <b> Subject: '.$row['subject'].'</b></p>';
-		echo '<p class="text-left">'.$row['corps'].'</p>';
+		echo '<p class="text-left"><h3>FROM: '.htmlspecialchars($row['expeditor']).'</h3></p>';
+		echo '<p class="text-left"> <b> Subject: '.htmlspecialchars($row['subject']).'</b></p>';
+		echo '<p class="text-left">'.htmlspecialchars($row['corps']).'</p>';
 	}
 	$result=null;
 	$file_db=null;
@@ -128,8 +128,8 @@ function searchMail(){
 				?>
 		<form action="" method="post">
 		
-		<input id="idmessage" type="hidden" name="Mid" value="<?php echo $row['id']; ?>">
-		<input id="expeditor" type="hidden" name="expeditor" value="<?php echo $row['expeditor']; ?>">
+		<input id="idmessage" type="hidden" name="Mid" value="<?php echo htmlspecialchars($row['id']); ?>">
+		<input id="expeditor" type="hidden" name="expeditor" value="<?php echo htmlspecialchars($row['expeditor']); ?>">
 
 		<!-- Button (Double) -->
   <div class="col-md-8">
@@ -199,15 +199,15 @@ function searchUsers(){
 	
 	foreach($result as $row){
 		echo '<tr>';
-		echo '<th>'.$row['id'].'</th>';
-		echo '<th>'.$row['login'].'</th>';
-		echo '<th>'.$row['enable'].'</th>';
-		echo '<th>'.$row['name'].'</th>';
+		echo '<th>'.htmlspecialchars($row['id']).'</th>';
+		echo '<th>'.htmlspecialchars($row['login']).'</th>';
+		echo '<th>'.htmlspecialchars($row['enable']).'</th>';
+		echo '<th>'.htmlspecialchars($row['name']).'</th>';
 		echo '<th>';
 				?>
 		<form action="" method="post">
 		
-		<input id="iduser" type="hidden" name="iduser" value="<?php echo $row['id']; ?>">
+		<input id="iduser" type="hidden" name="iduser" value="<?php echo htmlspecialchars($row['id']); ?>">
 		<!-- Button (Double) -->
   <div class="col-md-8">
 	<button id="edit" name="edit" class="btn" type="submit">Edit</button>

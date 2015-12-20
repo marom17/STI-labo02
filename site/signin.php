@@ -74,9 +74,9 @@ if(isSet($_POST['trimite'])) {
     </form>
 
     <hr>
-      <footer>
-        <p>&copy; Laurent Girod & Romain Maillard - 2015</p>
-      </footer>
+<?php
+	include 'footer.php';
+?> 
   </div> <!-- /container -->
 
 
