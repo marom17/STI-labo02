@@ -1,0 +1,55 @@
+
+
+body
+{
+    padding-top: 50px;
+}
+
+footer
+{
+    padding: 30px 0;
+}
+
+.starter-template
+{
+    padding: 40px 15px;
+    text-align: center;
+}
+
+.profil-box .musics-box .play-box .playlist-box
+{
+    padding: 40px 15px;
+    text-align: left;
+}
+
+.audio-control
+{
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 16px;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-control
+{
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.admin-menu, .admin-menu>ul, .admin-menu>ul>li
+{
+    background: grey;
+    text-color: black;
+}
+
+
