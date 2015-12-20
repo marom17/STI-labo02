@@ -12,6 +12,7 @@ function sqliteConnect(){
 	'sti',
 	'sti');
     // Set errormode to exceptions
+	$file_db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $file_db->setAttribute(PDO::ATTR_ERRMODE, 
                             PDO::ERRMODE_EXCEPTION);	
 	}
@@ -29,8 +30,9 @@ function login($user,$password){
 	
 	$valide=false;
 	try{
-	$result = $file_db->query("SELECT * FROM utilisateurs 
-	WHERE login='{$user}'");
+		$result = $file_db->prepare("SELECT * FROM utilisateurs 
+	WHERE login=:user");
+	$result->execute(array('user'=>$user));
 	if($result) {
 		// Vérifie les informations de connexion.
 		foreach($result as $row) {
@@ -53,6 +55,7 @@ function login($user,$password){
 	}
 
 	//	Ferme le traitement de la requête
+	$result=null;
 	$file_db=null;
 	
 	return $valide;
@@ -84,21 +87,25 @@ function readMail($idMessage,$expeditor){
 
 <?php
 	
-	$result = $file_db->query("SELECT * FROM messages WHERE id='{$idMessage}'");
+	$result= $file_db->prepare("SELECT * FROM messages WHERE id=:idMessage");
+	$result->execute(array('idMessage' => $idMessage));
 	foreach($result as $row){
 		echo '<p class="text-left"><h3>FROM: '.$row['expeditor'].'</h3></p>';
 		echo '<p class="text-left"> <b> Subject: '.$row['subject'].'</b></p>';
 		echo '<p class="text-left">'.$row['corps'].'</p>';
 	}
-	
+	$result=null;
 	$file_db=null;
 	
 }
 
 function deleteMail($idMessage){
 	$file_db = sqliteConnect();
-	$file_db->exec("DELETE FROM messages WHERE id='{$idMessage}'");
-	$file_db->exec("DELETE FROM messutil WHERE idmessage='{$idMessage}'");
+	$result= $file_db->prepare("DELETE FROM messages WHERE id=:idMessage");
+	$result->execute(array('idMessage' => $idMessage));
+	$result= $file_db->prepare("DELETE FROM messutil WHERE idmessage=:idMessage");
+	$result->execute(array('idMessage' => $idMessage));
+	$result=null;
 	$file_db=null;
 	
 }
@@ -107,10 +114,10 @@ function deleteMail($idMessage){
 function searchMail(){
 	
 	$file_db = sqliteConnect();
-	
-	$result = $file_db->query("SELECT * FROM messages
+	$result= $file_db->prepare("SELECT * FROM messages
 	JOIN messutil ON messutil.idmessage=messages.id
-	WHERE idutilisateur='{$_SESSION['id']}' ORDER BY datereception DESC");
+	WHERE idutilisateur=:id ORDER BY datereception DESC");
+	$result->execute(array('id' => $_SESSION['id']));
 	
 	foreach($result as $row){
 		echo '<tr>';
@@ -136,7 +143,7 @@ function searchMail(){
 		echo '</th>';
 		echo '</tr>';
 	}
-	
+	$resutl=null;
 	$file_db=null;
 	
 }
@@ -148,19 +155,22 @@ function sendMail($to,$subject,$corps){
 	//(SELECT last_insert_rowid())
 	$time = date('Y-m-d H:i:s', time());	
 
-	$result = $file_db->query("SELECT * FROM utilisateurs WHERE login='{$to}'");
+	$result= $file_db->prepare("SELECT * FROM utilisateurs WHERE login=:to");
+	$result->execute(array('to' => $to));
 	foreach($result as $row){
+	$insert = $file_db->prepare("INSERT INTO messages (datereception,expeditor,subject,corps)
+	VALUES (:time,:username,:subject,:corps);");
+	$insert->execute(array('time' => $time,'username' => $_SESSION['username'],
+		'subject' => $subject,'corps' => $corps));
 	
-	$file_db->exec("INSERT INTO messages (datereception,expeditor,subject,corps)
-	VALUES ('{$time}','{$_SESSION['username']}','{$subject}','{$corps}');");
-	
-	
-	$file_db->exec("INSERT INTO messutil VALUES('{$row['id']}',(SELECT last_insert_rowid()))");
+	$insert = $file_db->prepare("INSERT INTO messutil VALUES(:id,LAST_INSERT_ID())");
+	$insert->execute(array('id' => $row['id']));
 	
 	$valide = true;
 	
 	}
-	
+	$insert=null;
+	$resutl=null;
 	$file_db=null;
 	
 	return $valide;
@@ -171,10 +181,11 @@ function changePass($p1,$p2){
 	$valide=false;
 	if($p1==$p2){
 		$crypt=sha1($p1);
-		$file_db->exec("UPDATE utilisateurs SET password='{$crypt}' WHERE id='{$_SESSION['id']}'");
+		$insert = $file_db->prepare("UPDATE utilisateurs SET password=:crypt WHERE id=:id");
+		$insert->execute(array('crypt' => $crypt,'id' => $_SESSION['id']));
 		$valide=true;
 	}
-	
+	$insert=null;
 	$file_db=null;
 	return $valide;
 }
@@ -183,7 +194,6 @@ function changePass($p1,$p2){
 function searchUsers(){
 	
 	$file_db = sqliteConnect();
-	
 	$result = $file_db->query("SELECT utilisateurs.id,login,enable,roles.name FROM utilisateurs
 	JOIN roles ON roles.id=utilisateurs.role ORDER BY utilisateurs.id ASC");
 	
@@ -216,7 +226,9 @@ function searchUsers(){
 
 function deleteUser($id){
 	$file_db = sqliteConnect();
-	$file_db->exec("DELETE FROM utilisateurs WHERE id='{$id}'");
+	$insert = $file_db->prepare("DELETE FROM utilisateurs WHERE id=:id");
+	$insert->execute(array('id' => $id));
+	$insert=null;
 	$file_db=null;
 }
 
@@ -226,18 +238,21 @@ function editUser($id,$p1,$p2,$enable,$role){
 	$valide=false;
 	
 	if($p1==""){
-		$file_db->exec("UPDATE utilisateurs SET enable='{$enable}',role='${role}' WHERE id='{$id}'");
+		
+		$insert = $file_db->prepare("UPDATE utilisateurs SET enable=:enable,role=:role WHERE id=:id");
+		$insert->execute(array('enable' => $enable,'role' => $role,'id' => $id));
 		$valide=true;
 	}
 	else{
 	if($p1==$p2){
-	$crypt=sha1($p1);
-	$file_db->exec("UPDATE utilisateurs SET password='{$crypt}',enable='{$enable}',role='${role}' WHERE id='{$id}'");
-	$valide=true;
+		$crypt=sha1($p1);
+		$insert = $file_db->prepare("UPDATE utilisateurs SET password=:crypt,enable=:enable,role=:role WHERE id=:id");
+		$insert->execute(array('crypt' => $crypt,'enable' => $enable,'role' => $role,'id' => $id));
+		$valide=true;
 	}
 	}
 	
-	
+	$insert=null;
 	$file_db=null;
 	
 	return $valide;
@@ -249,11 +264,13 @@ function newUser($login,$p1,$p2,$role,$enable){
 	
 	$file_db = sqliteConnect();
 	if($p1==$p2){
-	$crypt=sha1($p1);
-	$file_db->exec("INSERT INTO utilisateurs(login,password,enable,role)
-	VALUES ('{$login}','{$crypt}','{$enable}','{$role}')");
-	$valide=true;
+		$crypt=sha1($p1);
+		$insert = $file_db->prepare("INSERT INTO utilisateurs(login,password,enable,role)
+	VALUES (:login,:crypt,:enable,:role)");
+		$insert->execute(array('login' => $login,'crypt' => $crypt,'enable' => $enable,'role' => $role));
+		$valide=true;
 	}
+	$insert=null;
 	$file_db=null;	
 	
 	return $valide;
