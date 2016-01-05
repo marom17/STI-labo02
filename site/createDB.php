@@ -23,6 +23,9 @@
     * Create tables                       *
     **************************************/
  
+	$file_db->exec("CREATE database sti-mail");
+	$file_db->exec("use sti-mail");
+ 
     // Create table messages
     $file_db->exec("CREATE TABLE IF NOT EXISTS messages (
                     id INTEGER PRIMARY KEY, 

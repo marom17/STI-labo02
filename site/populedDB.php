@@ -10,16 +10,22 @@
     **************************************/
  
     // Create (connect to) SQLite database in file
-    $file_db = new PDO('mysql:host=localhost;dbname=sti-mail',
+    $file_db = new PDO('mysql:host=localhost;dbname=sti_mail',
 	'root',
 	'root');
     // Set errormode to exceptions
     $file_db->setAttribute(PDO::ATTR_ERRMODE, 
                             PDO::ERRMODE_EXCEPTION); 
 							
-	$crypt=sha1("test");					
+	$crypt=sha1("kore");					
 	$file_db->exec("INSERT INTO utilisateurs (login,password,enable,role)
 	VALUES ('rom','{$crypt}',1,2);");
+	$crypt=sha1("do");					
+	$file_db->exec("INSERT INTO utilisateurs (login,password,enable,role)
+	VALUES ('fa','{$crypt}',1,1);");
+	$crypt=sha1("ti");					
+	$file_db->exec("INSERT INTO utilisateurs (login,password,enable,role)
+	VALUES ('ta','{$crypt}',0,1);");
 	
 	$crypt=sha1("fa");
 	$file_db->exec("INSERT INTO utilisateurs (login,password,enable,role)

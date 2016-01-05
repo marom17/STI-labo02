@@ -8,7 +8,7 @@ function sqliteConnect(){
 	**********************/
 	try{
     // Create (connect to) SQLite database in file
-    $file_db = new PDO('mysql:host=localhost;dbname=sti-mail',
+    $file_db = new PDO('mysql:host=localhost;dbname=sti_mail',
 	'sti',
 	'sti');
     // Set errormode to exceptions
